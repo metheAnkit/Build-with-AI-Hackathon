@@ -1,64 +1,133 @@
-# Build-with-AI-Hackathon
+# Build-with-AI-Kolkata-Hackathon
 
-🚨 Problem
+# 🌍 MedVoyage SLM
+### Your Personal Travel Health Advisor | Offline | CPU Native | Gemma 3 (270M)
 
-When people plan trips, health preparation is usually the last thing on their mind. Most travelers don’t know which vaccines they need, what medicines to carry, or what risks exist at their destination—whether it’s altitude sickness in the mountains, infections in tropical regions, or dehydration in hot climates.
+<p align="center">
+  <img src="https://img.shields.io/badge/Model-Gemma%203%20270M-blue?style=for-the-badge&logo=google" />
+  <img src="https://img.shields.io/badge/Built%20with-Smolify.AI-orange?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Runs%20on-CPU%20Only-green?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Internet-Not%20Required-red?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Domain-Travel%20Health-purple?style=for-the-badge" />
+</p>
 
-The bigger issue is access to the right information at the right time. Reliable travel health advice is either:
+---
 
-Too generic to be useful,
-Hidden behind expensive travel clinics,
-Or only available online—when many travelers are actually offline (like in remote trekking routes or rural areas).
+## 🚨 Problem
 
-So people either rely on random internet searches or don’t prepare at all. That’s why so many travel-related health problems—like food poisoning, altitude sickness, or infections—are completely preventable but still very common.
+Every year, thousands of travelers head to the Himalayas, Northeast India, Southeast Asia, or remote destinations completely unprepared. Wrong vaccines. No altitude medicine. No idea what food or water is safe. And when something goes wrong mid trek or mid flight, there is no signal, no doctor nearby, and no reliable guidance.
 
-💡 Solution — MedVoyage-SLM
+Travel health advice is either locked behind expensive clinics, buried in generic PDFs, or requires stable internet that simply does not exist in Spiti Valley or rural Meghalaya. The traveler who needs help the most is always the one with the least access to it.
 
-MedVoyage solves this by acting as a personal travel health advisor that works offline.
+---
 
-A traveler just enters a few simple details—destination, trip duration, travel style, and any health conditions—and gets a clear, structured health preparation plan.
+## 💡 Solution: MedVoyage SLM
 
-Instead of overwhelming them with information, it gives exactly what they need:
+MedVoyage is a Small Language Model fine tuned on Gemma 3 270M that acts as your personal travel health advisor. Completely offline. Runs on everyday CPU. Zero internet needed.
 
-Vaccines to consider
-Medicines to pack with specific use-cases
-Food and water safety tips tailored to the location
-Climate and altitude warnings
-Guidance on where to seek medical help
-Clear red-flag symptoms that should never be ignored
+You tell it your destination, trip duration, travel style, and any existing health conditions. It gives you back a complete personalized medical prep pack instantly.
 
-It’s simple, fast, and designed for real-world use—especially in places where connectivity is unreliable.
+| Output | Description |
+|---|---|
+| 💉 Vaccines | Required vs recommended for your destination |
+| 💊 Medicine Kit | Exact medicines with use cases |
+| 🍽️ Food and Water | Safety rules specific to your destination |
+| 🌡️ Climate Warnings | Altitude, heat, and humidity health alerts |
+| 🏥 Medical Facility | Guidance on arrival |
+| 🚨 Red Flags | Emergency symptoms to never ignore |
 
-🧠 Why a Specialized Model Instead of a General LLM?
+Built using Smolify's Knowledge Distillation pipeline, frontier AI models acted as the Teacher generating 10,000 high fidelity training examples. The Student model, Gemma 3 270M, learned to reason like a travel medicine specialist. In 60 minutes. On a CPU. For free.
 
-At first glance, you might think a large general-purpose AI model could handle this. But in practice, that approach has serious limitations.
+---
 
-A general LLM:
+## 🧠 Why a Specialized Model Instead of a General LLM?
 
-Gives broad, sometimes vague answers instead of structured checklists
-May include irrelevant or unsafe suggestions
-Requires constant internet access, which defeats the purpose for travelers
-Isn’t optimized for specific travel-health scenarios, especially India-focused ones
+General LLMs like GPT or Gemini are brilliant at everything but optimized for nothing. They require internet, cost money per query, and cannot run offline on low end devices.
 
-MedVoyage takes a different approach by using a small, specialized language model trained specifically for this task.
+MedVoyage is trained on one thing and one thing only, travel health preparation. That specialization means it is faster, lighter, more accurate for its domain, and works in the exact moment you need it most, when you are already on the road with zero connectivity.
 
-Because it’s focused:
+> This is the DeepSeek Effect in action. Not bigger. Smarter. Not renting intelligence. Owning it.
 
-It produces consistent, structured outputs every time
-It stays within a safe scope (prevention, not diagnosis)
-It understands context like destination type, climate, and traveler profile
-It works fully offline on low-resource devices
+---
 
-In short, instead of being a “know-everything” model, MedVoyage is designed to do one job extremely well: prepare travelers medically before their trip.
+## 🎯 Why This Matters
 
-🎯 Why This Matters
+India's outbound travel market crossed 27 million trips last year. Domestic travel crossed 2 billion. Medical emergency claims from travel insurance companies are rising every single year and most of them are completely preventable.
 
-By combining domain-specific intelligence with offline accessibility, MedVoyage fills a gap that general AI tools can’t.
+MedVoyage does not replace your doctor. It makes sure you are prepared enough that you never urgently need one mid trek. Small model. Massive impact. Whether you are a solo backpacker heading to Zanskar or a family flying to Bangkok for the first time, MedVoyage fits in your pocket and works where there is no signal. That is not a feature. That is the entire point.
 
-It helps travelers move from:
+---
 
-“I’ll figure it out if something happens”
-to
-“I’m prepared before anything goes wrong.”
+## 🚀 Quick Start
 
-And that shift is what prevents emergencies in the first place
+```python
+from transformers import AutoProcessor, AutoModelForCausalLM
+
+model_id = "your-username/medvoyage-slm"
+
+processor = AutoProcessor.from_pretrained(model_id, device_map="auto")
+model = AutoModelForCausalLM.from_pretrained(model_id, dtype="auto", device_map="auto")
+
+message = [
+    {"role": "system", "content": "You are MedVoyage, an expert travel health advisor."},
+    {"role": "user", "content": "I am trekking to Leh Ladakh for 10 days. I am 28 years old with no health conditions. What medical prep do I need?"}
+]
+
+inputs = processor.apply_chat_template(
+    message,
+    add_generation_prompt=True,
+    return_dict=True,
+    return_tensors="pt"
+)
+
+out = model.generate(
+    **inputs.to(model.device),
+    pad_token_id=processor.eos_token_id,
+    max_new_tokens=256
+)
+
+print(processor.decode(out[0][len(inputs["input_ids"][0]):], skip_special_tokens=True))
+```
+
+---
+
+## 🏗️ How It Was Built
+
+| Component | Details |
+|---|---|
+| Base Model | Gemma 3 270M |
+| Platform | Smolify.AI |
+| Method | Knowledge Distillation |
+| Dataset Size | 10,000 synthetic examples |
+| Training Hardware | L4 GPU via Smolify Pipeline |
+| Inference Hardware | CPU only |
+| Build Time | 15 minutes |
+
+---
+
+## 📦 Dataset Coverage
+
+| Variable | Values |
+|---|---|
+| Destination Type | Himalayan, Coastal, Desert, Jungle, Urban, International |
+| Trip Duration | Weekend, 1 week, 2 to 3 weeks, 1 month+ |
+| Travel Style | Adventure, Pilgrimage, Backpacking, Family, Business |
+| Health Profile | Healthy, Diabetic, Asthmatic, Pregnant, Elderly, Child |
+| Season | Summer, Monsoon, Winter, Spring |
+| Risk Level | Low (Goa), Medium (Assam), High (Leh, Remote Jungle) |
+
+---
+
+## 🙏 Acknowledgements
+
+Built with [Smolify.AI](https://smolify.ai) 🔥
+
+Massive thanks to [Rishiraj Acharya](https://github.com/rishiraj) for building Smolify, a platform that makes Knowledge Distillation accessible to every developer, student, and builder regardless of their resources.
+
+Built at the GDG Cloud Kolkata and ML Kolkata Mini Hackathon.
+
+---
+
+## 🏷️ Tags
+
+`#SmolifyAI` `#GemmaAI` `#KnowledgeDistillation` `#HealthTech` `#TravelHealth` `#AIForGood` `#SLM` `#GDGKolkata` `#MLKolkata` `#EdgeAI` `#CPUAI` `#GoogleGemma` `#BuildWithAI`
