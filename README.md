@@ -1,4 +1,4 @@
-# Build-with-AI-Kolkata-Hackathon
+# Build-with-AI-Kolkata-Mini-Hackathon
 
 # 🌍 MedVoyage SLM
 ### Your Personal Travel Health Advisor | Offline | CPU Native | Gemma 3 (270M)
